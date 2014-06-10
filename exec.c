@@ -264,6 +264,14 @@ bool ret(Machine *pmach, Instruction instr, unsigned addr) {
  * @return true
  */
 bool push(Machine *pmach, Instruction instr, unsigned addr) {
+    check_stack_pointer(pmach, addr); // on contrôle que le SP est valide (dataend<SP<=datasize-1)
+    if (instr.instr_generic._immediate) { // si I = 1, instruction immédiate
+        pmach->_data[pmach->_sp--] = instr.instr_immediate._value; // Data[SP] <- Value puis SP <- SP -1
+    } else { // si I = 0, instruction absolue ou indexée
+        unsigned int adresse = get_addr(pmach, instr); // on récupère l'adresse de l'instruction
+        check_data_addr(pmach, adresse, addr); // on contrôle qu'on reste dans la pile
+        pmach->_data[pmach->_sp--] = pmach->_data[adresse]; // Data[SP] <- Data[Addr] puis SP <- SP -1
+    }
     return true;
 }
 
