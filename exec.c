@@ -96,6 +96,26 @@ void check_not_immediate(Instruction instr, unsigned addr) {
 }
 
 /**
+ * Contrôle si la condition de branchement C est respectée
+ * @param pmach la machime en cours
+ * @param instr l'instruction courante
+ * @param addr l'adresse de l'instruction
+ * @return si la condition est respectée
+ */
+bool condition_respected(Machine *pmach, Instruction instr, unsigned addr) {
+    switch (instr.instr_generic._regcond) {
+        case NC: return true; // Pas de condition, toujours vraie
+        case EQ: return (pmach->_cc == CC_Z); // Egal à 0, CC == Z
+        case NE: return (pmach->_cc != CC_Z); // Différent de z, CC != Z
+        case GT: return (pmach->_cc == CC_P); // Strictement positif, CC > Z
+        case GE: return (pmach->_cc == CC_P || pmach->_cc == CC_Z); // Positif ou nul, CC >= Z
+        case LT: return (pmach->_cc == CC_N); // Strictement négatif, CC < Z
+        case LE: return (pmach->_cc == CC_N || pmach->_cc == CC_Z); // Négatif ou nul, cc <= Z
+        default: error(ERR_CONDITION, addr); // condition illégale
+    }
+}
+
+/**
  * Décodage et éxecution de l'instruction LOAD
  * Accepte adressage immédiat, absolu et indexé
  * 
@@ -186,6 +206,11 @@ bool sub(Machine *pmach, Instruction instr, unsigned addr) {
  * @return true
  */
 bool branch(Machine *pmach, Instruction instr, unsigned addr) {
+    check_not_immediate(instr, addr); // on contrôle que l'adresse n'est pas immédiate
+    if (condition_respected(pmach, instr, addr)) { // on vérifie que la condition de branchemennt est vraie
+        unsigned int adresse = get_addr(pmach, instr); // on récupère l'adresse de l'instruction
+        pmach->_pc = adresse; // PC <- Addr
+    }
     return true;
 }
 
