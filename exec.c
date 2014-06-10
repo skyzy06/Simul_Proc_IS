@@ -17,7 +17,6 @@ bool call(Machine *pmach, Instruction instr, unsigned addr);
 bool ret(Machine *pmach, Instruction instr, unsigned addr);
 bool push(Machine *pmach, Instruction instr, unsigned addr);
 bool pop(Machine *pmach, Instruction instr, unsigned addr);
-bool load(Machine *pmach, Instruction instr, unsigned addr);
 
 //! Décodage et exécution d'une instruction
 
@@ -46,43 +45,119 @@ bool decode_execute(Machine *pmach, Instruction instr) {
     }
 }
 
+/**
+ * Décodage et éxecution de l'instruction LOAD
+ * Accepte adressage immédiat, absolu et indexé
+ * 
+ * @param pmach machine en cours d'éxecution
+ * @param instr instruction en cours
+ * @param addr addresse de l'instruction en cours
+ * @return true
+ */
 bool load(Machine *pmach, Instruction instr, unsigned addr) {
     return true;
 }
 
+/**
+ * Décodage et éxecution de l'instruction STORE
+ * Accepte adressage absolu et indexé
+ * 
+ * @param pmach machine en cours d'éxecution
+ * @param instr instruction en cours
+ * @param addr addresse de l'instruction en cours
+ * @return true
+ */
 bool store(Machine *pmach, Instruction instr, unsigned addr) {
     return true;
 }
 
+/**
+ * Décodage et éxecution de l'instruction ADD
+ * Accepte l'adressage immédiat, absolu et indexé
+ * 
+ * @param pmach machine en cours d'éxecution
+ * @param instr instruction en cours
+ * @param addr addresse de l'instruction en cours
+ * @return true
+ */
 bool add(Machine *pmach, Instruction instr, unsigned addr) {
     return true;
 }
 
+/**
+ * Décodage et éxecution de l'instruction SUB
+ * Accepte l'addressage immédiat, absolu et indexé
+ * 
+ * @param pmach machine en cours d'éxecution
+ * @param instr instruction en cours
+ * @param addr addresse de l'instruction en cours
+ * @return true
+ */
 bool sub(Machine *pmach, Instruction instr, unsigned addr) {
     return true;
 }
 
+/**
+ * Décodage et éxecution de l'instruction BRANCH
+ * Accepte l'adressage absolu et indexé
+ * 
+ * @param pmach machine en cours d'éxecution
+ * @param instr instruction en cours
+ * @param addr addresse de l'instruction en cours
+ * @return true
+ */
 bool branch(Machine *pmach, Instruction instr, unsigned addr) {
     return true;
 }
 
+/**
+ * Décodage et éxecution de l'instruction CALL
+ * Accepté l'adressage absolu et indexé
+ * 
+ * @param pmach machine en cours d'éxecution
+ * @param instr instruction en cours
+ * @param addr addresse de l'instruction en cours
+ * @return true
+ */
 bool call(Machine *pmach, Instruction instr, unsigned addr) {
     return true;
 }
 
+/**
+ * Décodage et éxecution de l'instruction RET
+ * 
+ * @param pmach machine en cours d'éxecution
+ * @param instr instruction en cours
+ * @param addr addresse de l'instruction en cours
+ * @return true
+ */
 bool ret(Machine *pmach, Instruction instr, unsigned addr) {
     return true;
 }
 
+/**
+ * Décodage et éxecution de l'instruction PUSH
+ * Accepte l'adressage immédiat, absolu et indexé
+ * 
+ * @param pmach machine en cours d'éxecution
+ * @param instr instruction en cours
+ * @param addr addresse de l'instruction en cours
+ * @return true
+ */
 bool push(Machine *pmach, Instruction instr, unsigned addr) {
     return true;
 }
 
+/**
+ * Décodage et éxecution de l'instruction POP
+ * Accepte adressage absolu et indexé
+ * 
+ * @param pmach machine en cours d'éxecution
+ * @param instr instruction en cours
+ * @param addr addresse de l'instruction en cours
+ * @return true
+ */
 bool pop(Machine *pmach, Instruction instr, unsigned addr) {
-    return true;
-}
-
-bool load(Machine *pmach, Instruction instr, unsigned addr) {
     return true;
 }
 
