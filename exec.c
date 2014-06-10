@@ -249,6 +249,8 @@ bool call(Machine *pmach, Instruction instr, unsigned addr) {
  * @return true
  */
 bool ret(Machine *pmach, Instruction instr, unsigned addr) {
+    check_stack_pointer(pmach, addr); // on contrôle que le SP est valide (dataend<SP<=datasize-1)
+    pmach->_pc = pmach->_data[++pmach->_sp]; // SP <- SP +1 puis PC <- Data[SP]
     return true;
 }
 
