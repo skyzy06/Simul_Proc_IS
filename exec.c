@@ -115,8 +115,13 @@ bool condition_respected(Machine *pmach, Instruction instr, unsigned addr) {
     }
 }
 
+/**
+ * Contrôle que le sommet de pile est valide
+ * @param pmach la machine en cours
+ * @param addr adresse de l'instruction
+ */
 void check_stack_pointer(Machine *pmach, unsigned addr) {
-    if (pmach->_sp > pmach->_dataend || pmach->_sp <= (pmach->_datasize - 1)) {
+    if (pmach->_sp < pmach->_dataend || pmach->_sp >= pmach->_datasize) { // dataend>SP>datasize
         error(ERR_SEGSTACK, addr);
     }
 }
@@ -154,7 +159,7 @@ bool load(Machine *pmach, Instruction instr, unsigned addr) {
  */
 bool store(Machine *pmach, Instruction instr, unsigned addr) {
     check_not_immediate(instr, addr); // on contrôle que l'instruction n'est pas immédiate
-    unsigned int adresse = get_addr(pmach, addr); // on récupére l'adresse réelle
+    unsigned int adresse = get_addr(pmach, instr); // on récupére l'adresse réelle
     check_data_addr(pmach, adresse, addr); // on contrôle qu'on est dans la pile
     pmach->_data[adresse] = pmach->_registers[instr.instr_generic._regcond]; // Data[Addr] <- R
     return true;
