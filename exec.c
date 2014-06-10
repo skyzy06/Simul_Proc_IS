@@ -46,6 +46,34 @@ bool decode_execute(Machine *pmach, Instruction instr) {
 }
 
 /**
+ * @param pmach la machine en cours
+ * @param instr l'instruction en cours
+ * @return l'adresse réelle d'une adresse indexée ou absolue
+ */
+unsigned int get_addr(Machine *pmach, Instruction instr) {
+    if (instr.instr_indexed._indexed) { // si indexée
+        return (pmach->_registers[instr.instr_indexed._rindex] + instr.instr_indexed._offset); // Addr = (RX) + Offset
+    } else { // si absolue
+        return instr.instr_absolute._address; // Addr = Abs
+    }
+}
+
+/**
+ * Met à jour le code condition selon la valeur de registre
+ * @param pmach la machine en cours
+ * @param reg le numéro de registre
+ */
+void refresh_code_cond(Machine *pmach, unsigned int reg) {
+    if (reg < 0) {
+        pmach->_cc = CC_N; // cc négatif
+    } else if (reg > 0) {
+        pmach->_cc = CC_P; // cc positif
+    } else {
+        pmach->_cc = CC_Z; // cc nul
+    }
+}
+
+/**
  * Décodage et éxecution de l'instruction LOAD
  * Accepte adressage immédiat, absolu et indexé
  * 
@@ -55,6 +83,17 @@ bool decode_execute(Machine *pmach, Instruction instr) {
  * @return true
  */
 bool load(Machine *pmach, Instruction instr, unsigned addr) {
+    if (instr.instr_generic._immediate) { // si I = 1, immédiat
+        pmach->_registers[instr.instr_generic._regcond] = instr.instr_immediate._value; // R <- Val
+    } else { // sinon I = 0, absolu ou indexé
+        unsigned int adresse = get_addr(pmach, instr); // on récupère l'adresse réelle
+        if (adresse > pmach->_datasize) { // on contrôle qu'on ne dépasse pas la taille de la pile
+            error(ERR_SEGDATA, addr);
+        }
+        pmach->_registers[instr.instr_generic._regcond] = pmach->_data[adresse]; // R <- Data[Addr]
+    }
+    //on met à jour le code condition
+    refresh_code_cond(pmach, pmach->_registers[instr.instr_generic._regcond]);
     return true;
 }
 
