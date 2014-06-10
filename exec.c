@@ -165,6 +165,14 @@ bool add(Machine *pmach, Instruction instr, unsigned addr) {
  * @return true
  */
 bool sub(Machine *pmach, Instruction instr, unsigned addr) {
+    if (instr.instr_generic._immediate) { // si I = 1, immédiat
+        pmach->_registers[instr.instr_generic._regcond] -= instr.instr_immediate._value; // R <- R + Value
+    } else { // sinon I = 0, absolue ou indexée
+        unsigned int adresse = get_addr(pmach, instr); // on récupére l'adresse réelle
+        check_data_addr(pmach, adresse, addr); // on contrôle qu'on est dans la pile
+        pmach->_registers[instr.instr_generic._regcond] -= pmach->_data[adresse]; // R <- R + Data[Addr]
+    }
+    refresh_code_cond(pmach, pmach->_registers[instr.instr_generic._regcond]); // on met à jour le code condition
     return true;
 }
 
