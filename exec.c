@@ -115,6 +115,12 @@ bool condition_respected(Machine *pmach, Instruction instr, unsigned addr) {
     }
 }
 
+void check_stack_pointer(Machine *pmach, unsigned addr) {
+    if (pmach->_sp > pmach->_dataend || pmach->_sp <= (pmach->_datasize - 1)) {
+        error(ERR_SEGSTACK, addr);
+    }
+}
+
 /**
  * Décodage et éxecution de l'instruction LOAD
  * Accepte adressage immédiat, absolu et indexé
@@ -207,7 +213,7 @@ bool sub(Machine *pmach, Instruction instr, unsigned addr) {
  */
 bool branch(Machine *pmach, Instruction instr, unsigned addr) {
     check_not_immediate(instr, addr); // on contrôle que l'adresse n'est pas immédiate
-    if (condition_respected(pmach, instr, addr)) { // on vérifie que la condition de branchemennt est vraie
+    if (condition_respected(pmach, instr, addr)) { // on vérifie que la condition de branchement est vraie
         unsigned int adresse = get_addr(pmach, instr); // on récupère l'adresse de l'instruction
         pmach->_pc = adresse; // PC <- Addr
     }
@@ -224,6 +230,13 @@ bool branch(Machine *pmach, Instruction instr, unsigned addr) {
  * @return true
  */
 bool call(Machine *pmach, Instruction instr, unsigned addr) {
+    check_not_immediate(instr, addr); // on contrôle que l'adresse n'est pas immédiate
+    check_stack_pointer(pmach, addr); // on contrôle que le SP est valide (dataend<SP<=datasize-1)
+    if (condition_respected(pmach, instr, addr)) { // on vérifie que la condition de branchement est vraie
+        pmach->_data[pmach->_sp--] = pmach->_pc; // Data[SP] <- PC puis SP <- SP -1
+        unsigned int adresse = get_addr(pmach, instr); // on récupère l'adresse de l'instruction
+        pmach->_pc = adresse; // PC <- Addr
+    }
     return true;
 }
 
