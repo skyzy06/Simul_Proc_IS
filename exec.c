@@ -74,6 +74,28 @@ void refresh_code_cond(Machine *pmach, unsigned int reg) {
 }
 
 /**
+ * Vérifie qu'on n'a pas d'erreur de segmentation dans la pile de donnée
+ * @param pmach la machine en cours
+ * @param adresse adresse (absolue ou indexée) de l'instruction en cours
+ * @param addr adresse réelle
+ */
+void check_data_addr(Machine *pmach, unsigned int adresse, unsigned addr) {
+    if (adresse > pmach->_datasize)
+        error(ERR_SEGDATA, addr);
+}
+
+/**
+ * Contrôle que l'instruction n'est pas immédiate
+ * @param instr l'instruction en cours
+ * @param addr l'adresse de l'instruction
+ */
+void check_not_immediate(Instruction instr, unsigned addr) {
+    if (instr.instr_generic._immediate) {
+        error(ERR_IMMEDIATE, addr);
+    }
+}
+
+/**
  * Décodage et éxecution de l'instruction LOAD
  * Accepte adressage immédiat, absolu et indexé
  * 
@@ -87,9 +109,7 @@ bool load(Machine *pmach, Instruction instr, unsigned addr) {
         pmach->_registers[instr.instr_generic._regcond] = instr.instr_immediate._value; // R <- Val
     } else { // sinon I = 0, absolu ou indexé
         unsigned int adresse = get_addr(pmach, instr); // on récupère l'adresse réelle
-        if (adresse > pmach->_datasize) { // on contrôle qu'on ne dépasse pas la taille de la pile
-            error(ERR_SEGDATA, addr);
-        }
+        check_data_addr(pmach, adresse, addr); // on contrôle qu'on ne dépasse pas la taille de la pile
         pmach->_registers[instr.instr_generic._regcond] = pmach->_data[adresse]; // R <- Data[Addr]
     }
     //on met à jour le code condition
@@ -107,6 +127,10 @@ bool load(Machine *pmach, Instruction instr, unsigned addr) {
  * @return true
  */
 bool store(Machine *pmach, Instruction instr, unsigned addr) {
+    check_not_immediate(instr, addr); // on contrôle que l'instruction n'est pas immédiate
+    unsigned int adresse = get_addr(pmach, addr); // on récupére l'adresse réelle
+    check_data_addr(pmach, adresse, addr); // on contrôle qu'on est dans la pile
+    pmach->_data[adresse] = pmach->_registers[instr.instr_generic._regcond]; // Data[Addr] <- R
     return true;
 }
 
