@@ -285,6 +285,11 @@ bool push(Machine *pmach, Instruction instr, unsigned addr) {
  * @return true
  */
 bool pop(Machine *pmach, Instruction instr, unsigned addr) {
+    check_not_immediate(instr, addr); // on contrôle que l'adresse n'est pas immédiate
+    unsigned int adresse = get_addr(pmach, instr); // on récupère l'adresse de l'instruction
+    check_data_addr(pmach, adresse, addr); // on contrôle qu'on reste dans la pile
+    check_stack_pointer(pmach, addr); // on contrôle que le SP est valide (dataend<SP<=datasize-1)
+    pmach->_data[adresse] = pmach->_data[++pmach->_sp]; // SP <- SP +1 puis Data[Addr] <- Data[SP]
     return true;
 }
 
