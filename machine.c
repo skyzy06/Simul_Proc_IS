@@ -9,6 +9,12 @@
 #include "exec.h"
 #include "debug.h"
 
+//! Affichage d'une erreur posix et sortie du programme
+/*!
+ * L'erreur levée est affichée et le programme se termine.
+ *
+ * \param msg un message indiquant où l'erreur a été récupérée
+ */
 void perror_exit(const char *msg)
 {
     perror(msg);
@@ -25,6 +31,7 @@ void perror_exit(const char *msg)
  * \param text le contenu du segment de texte
  * \param datasize taille utile du segment de données
  * \param data le contenu initial du segment de texte
+ * \param dataend taille des données statiques dans le segment de données
  */
 void load_program(Machine *pmach,
                   unsigned textsize, Instruction text[textsize],
@@ -36,7 +43,7 @@ void load_program(Machine *pmach,
     // text
     pmach->_text = (Instruction *) malloc(textsize * sizeof(Instruction)); // + free ?
     for (int i = 0; i < textsize; ++i)
-        pmach->_text[i] = text[i]; // + HALT ?
+        pmach->_text[i] = text[i];
 
     // dataend
     pmach->_dataend = dataend;
@@ -120,7 +127,7 @@ void read_program(Machine *mach, const char *programfile)
         exit(EXIT_FAILURE);
     }
 
-    load_program(mach, textsize, (Instruction *) text, datasize, data, dataend); // casts ?
+    load_program(mach, textsize, (Instruction *) text, datasize, data, dataend);
     free(text);
     free(data);
     close(fd);
